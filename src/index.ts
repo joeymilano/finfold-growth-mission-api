@@ -39,7 +39,7 @@ async function routeRequest(request: Request, env: Env, requestId: string): Prom
     return jsonResponse({ status: "ok", commit: env.COMMIT_SHA });
   }
   if (request.method === "GET" && path === "/.well-known/xagent-verification.json") {
-    return jsonResponse({ slug: "finfold-growth-mission", commit: env.COMMIT_SHA });
+    return jsonResponse({ schemaVersion: 1, slug: "finfold-growth-mission", commit: env.COMMIT_SHA });
   }
   if (request.method === "GET" && path === "/openapi.json") {
     return jsonResponse(openApiDocument(env.APP_BASE_URL), 200, { "cache-control": "public, max-age=300" });

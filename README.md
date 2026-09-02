@@ -25,7 +25,7 @@ The model cannot cite arbitrary summaries: every delivered evidence quote must b
 ## Live interfaces
 
 - `GET /health` — status and exact deployed commit
-- `GET /.well-known/xagent-verification.json` — X-Agent slug and the same commit
+- `GET /.well-known/xagent-verification.json` — schema version, X-Agent slug, and the same commit
 - `GET /v1/capability` — product boundary, retention, side effects, and fixed per-mission price interface
 - `POST /v1/missions` — create one mission (`mission:create`)
 - `GET /v1/missions/{id}` — read mission, attribution, verdict, and next action (`mission:read`)

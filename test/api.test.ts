@@ -44,6 +44,7 @@ describe("REST growth mission loop", () => {
     expect(await health.json()).toEqual({ status: "ok", commit: "1111111111111111111111111111111111111111" });
     const proof = await call("/.well-known/xagent-verification.json");
     expect(await proof.json()).toEqual({
+      schemaVersion: 1,
       slug: "finfold-growth-mission",
       commit: "1111111111111111111111111111111111111111",
     });

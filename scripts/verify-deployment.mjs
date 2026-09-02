@@ -13,7 +13,7 @@ const proof = await proofResponse.json();
 if (!healthResponse.ok || health.status !== "ok" || health.commit !== expected) {
   throw new Error(`Health verification failed: ${JSON.stringify(health)}`);
 }
-if (!proofResponse.ok || proof.slug !== "finfold-growth-mission" || proof.commit !== expected) {
+if (!proofResponse.ok || proof.schemaVersion !== 1 || proof.slug !== "finfold-growth-mission" || proof.commit !== expected) {
   throw new Error(`Ownership proof failed: ${JSON.stringify(proof)}`);
 }
 console.log(JSON.stringify({ verified: true, base, commit: expected, health, proof }, null, 2));
