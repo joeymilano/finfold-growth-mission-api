@@ -138,10 +138,20 @@ async function callModel(env: Env, messages: Array<{ role: "system" | "user"; co
 
 function parseGenerated(raw: string): GeneratedMission {
   let value: unknown;
-  try {
-    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1];
-    value = JSON.parse(fenced ?? raw);
-  } catch {
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1];
+  const objectStart = raw.search(/\{\s*"mission"\s*:/);
+  const objectEnd = raw.lastIndexOf("}");
+  const embedded = objectStart >= 0 && objectEnd > objectStart ? raw.slice(objectStart, objectEnd + 1) : undefined;
+  const candidates = [fenced, raw, embedded].filter((candidate): candidate is string => Boolean(candidate));
+  for (const candidate of candidates) {
+    try {
+      value = JSON.parse(candidate);
+      break;
+    } catch {
+      continue;
+    }
+  }
+  if (value === undefined) {
     throw new AppError("GENERATION_FAILED", "The generated mission was not valid JSON.", 502, { retryable: true });
   }
   const result = generatedMissionSchema.safeParse(value);

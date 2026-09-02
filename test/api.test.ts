@@ -100,6 +100,25 @@ describe("REST growth mission loop", () => {
     expect(body.claimMap[0].evidenceIds).toEqual(["e2"]);
   });
 
+  it("extracts a schema-valid JSON object from a provider reasoning envelope", async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockImplementationOnce(async () =>
+      new Response((await import("./fixtures")).SOURCE_HTML, {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      }),
+    );
+    fetchMock.mockImplementationOnce(async () =>
+      Response.json({
+        choices: [{ message: { content: `<think>Choose the strongest section.</think>\n${JSON.stringify(GENERATED)}` } }],
+      }),
+    );
+
+    const { response, body } = await createMission("reasoning-envelope-0001");
+    expect(response.status).toBe(201);
+    expect(body.validation).toMatchObject({ passed: true, evidenceExactMatch: true });
+  });
+
   it("replays the same idempotency key and rejects a changed payload", async () => {
     const first = await createMission("same-key-0001");
     const replay = await createMission("same-key-0001");
