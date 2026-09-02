@@ -151,8 +151,13 @@ export function validateGeneratedMission(
     .map((statement) => statement.trim().replace(/^["“”']+|["“”']+$/g, ""))
     .filter((statement) => statement.length >= 20)
     .filter((statement) => !/^https?:\/\//i.test(statement))
-    .filter((statement) => !generated.evidence.some((evidence) => statement.includes(evidence.quote)))
-    .filter((statement) => !exactClaims.some((claim) => statement.includes(claim)))
+    .filter(
+      (statement) =>
+        !generated.evidence.some(
+          (evidence) => statement.includes(evidence.quote) || evidence.quote.includes(statement),
+        ),
+    )
+    .filter((statement) => !exactClaims.some((claim) => statement.includes(claim) || claim.includes(statement)))
     .filter((statement) => !HYPOTHESIS_MARKERS.test(statement));
   if (unsupportedStatements.length) {
     throw new AppError(

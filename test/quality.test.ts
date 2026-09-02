@@ -20,6 +20,27 @@ describe("claim-to-evidence and content quality", () => {
     });
   });
 
+  it("accepts individual sentences compiled from one exact multi-sentence quote", () => {
+    const quote = "Plan work in one calm workspace. Review customer evidence before launch.";
+    const generated = generatedMissionSchema.parse({
+      ...GENERATED,
+      asset: {
+        ...GENERATED.asset,
+        body: `A product angle worth testing:\n\n${quote}\n\nCould this help? {{TRACKING_URL}}`,
+      },
+      evidence: [{ id: "e1", sectionId: "s1", quote, confidence: 0.99 }],
+      claimMap: [{ claim: quote, evidenceIds: ["e1"] }],
+    });
+    expect(
+      validateGeneratedMission(
+        generated,
+        [{ id: "s1", kind: "paragraph", text: quote }],
+        "leads",
+        "linkedin",
+      ),
+    ).toMatchObject({ passed: true, evidenceExactMatch: true });
+  });
+
   it("rejects a quote that is not an exact source substring", () => {
     const generated = generatedMissionSchema.parse({
       ...GENERATED,
