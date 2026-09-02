@@ -9,7 +9,7 @@ Finfold Growth Mission is one stateless TypeScript Worker with a D1 binding. It 
 3. Reserve `(key, endpoint, Idempotency-Key)` against a canonical request hash.
 4. Validate the source and every redirect; stream at most 1.5 MB of HTML.
 5. Extract stable `s1…sN` semantic sections from title, metadata, headings, paragraphs, lists, links, and JSON-LD.
-6. Send the sections as explicitly untrusted data in one structured Qwen 3.8 request through the in-process Workers AI binding. An OpenAI-compatible HTTP adapter is retained for portability and deterministic tests.
+6. Send the sections as explicitly untrusted data in one structured Qwen 3 30B-A3B request through the in-process Workers AI binding. An OpenAI-compatible HTTP adapter is retained for portability and deterministic tests.
 7. Validate the schema, exact evidence substrings, claim references, objective/platform, one CTA, length, numbers, and prohibited guarantees.
 8. Repair once when generation or validation fails. A second failure returns a typed error and persists no mission.
 9. Save evidence snippets, the validated result, the tracking destination, and the 30-day retention deadline.

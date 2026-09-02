@@ -54,17 +54,34 @@ export async function reserveIdempotency(
 
   const existing = await db
     .prepare(
-      `SELECT request_hash, response_status, response_body, state
+      `SELECT request_hash, response_status, response_body, state, created_at
        FROM idempotency_records WHERE api_key_id = ? AND endpoint = ? AND idempotency_key = ?`,
     )
     .bind(apiKeyId, endpoint, key)
-    .first<{ request_hash: string; response_status: number | null; response_body: string | null; state: string }>();
+    .first<{
+      request_hash: string;
+      response_status: number | null;
+      response_body: string | null;
+      state: string;
+      created_at: string;
+    }>();
   if (!existing) throw new AppError("INTERNAL_ERROR", "Idempotency state could not be loaded.", 500, { retryable: true });
   if (existing.request_hash !== requestHash) {
     throw new AppError("IDEMPOTENCY_CONFLICT", "The idempotency key was already used with a different payload.", 409);
   }
   if (existing.state === "complete" && existing.response_status !== null && existing.response_body !== null) {
     return { kind: "replay", status: existing.response_status, body: existing.response_body };
+  }
+  if (Date.parse(existing.created_at) < Date.parse(now) - 2 * 60_000) {
+    const reclaimed = await db
+      .prepare(
+        `UPDATE idempotency_records SET created_at = ?, expires_at = ?
+         WHERE api_key_id = ? AND endpoint = ? AND idempotency_key = ?
+           AND state = 'processing' AND request_hash = ? AND created_at = ?`,
+      )
+      .bind(now, expiresAt, apiKeyId, endpoint, key, requestHash, existing.created_at)
+      .run();
+    if (reclaimed.meta.changes === 1) return { kind: "owner" };
   }
   return { kind: "processing" };
 }

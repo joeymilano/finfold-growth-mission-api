@@ -68,8 +68,7 @@ async function callModel(env: Env, messages: Array<{ role: "system" | "user"; co
         messages,
         response_format: { type: "json_object" },
         temperature: 0.2,
-        max_completion_tokens: 1_800,
-        chat_template_kwargs: { enable_thinking: false },
+        max_tokens: 1_800,
       });
     } catch {
       throw new AppError("GENERATION_FAILED", "Workers AI was unavailable.", 502, { retryable: true });

@@ -39,7 +39,7 @@ Mutation endpoints require both `Authorization: Bearer <review-key>` and `Idempo
 
 ## Quick start
 
-Requirements: Node.js 22+, a Cloudflare account, and Wrangler authentication. Production uses Cloudflare Workers AI with Qwen 3.8 27B; an OpenAI-compatible HTTP adapter remains available for alternative deployments and deterministic tests.
+Requirements: Node.js 22+, a Cloudflare account, and Wrangler authentication. Production uses Cloudflare Workers AI with Qwen 3 30B-A3B for bounded latency; an OpenAI-compatible HTTP adapter remains available for alternative deployments and deterministic tests.
 
 ```bash
 npm ci

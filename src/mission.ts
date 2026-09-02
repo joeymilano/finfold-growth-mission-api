@@ -85,7 +85,16 @@ export async function createMissionOperation(
   }
 
   try {
+    const sourceStarted = Date.now();
     const source = await fetchSourceEvidence(input.sourceUrl);
+    console.log(
+      JSON.stringify({
+        event: "source_validation",
+        requestId,
+        status: "passed",
+        durationMs: Date.now() - sourceStarted,
+      }),
+    );
     const generatedResult = await generateMission(env, input, source);
     console.log(
       JSON.stringify({
