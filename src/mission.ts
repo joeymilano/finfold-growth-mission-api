@@ -119,6 +119,7 @@ export async function createMissionOperation(
     const asset = {
       ...generatedResult.generated.asset,
       body: generatedResult.generated.asset.body.replace("{{TRACKING_URL}}", trackedUrl),
+      cta: generatedResult.generated.asset.cta.replace("{{TRACKING_URL}}", trackedUrl),
     };
 
     const stored: StoredMissionResult = {

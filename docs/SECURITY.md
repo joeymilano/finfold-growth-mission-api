@@ -8,7 +8,7 @@ Cloudflare's outbound network boundary is an additional control. As with any hos
 
 ## Prompt injection and evidence
 
-Scripts, styles, iframes, templates, SVG, comments, and noscript blocks are excluded. Remaining source sections are labeled untrusted in the system and user instructions. The model cannot authorize tools or side effects. Every cited quote must be an exact substring of its stored section, and every claim reference must resolve to a validated evidence ID.
+Scripts, styles, iframes, templates, SVG, comments, and noscript blocks are excluded. Remaining source sections are labeled untrusted in the system and user instructions. The model cannot authorize tools or side effects. Every cited quote must be an exact substring of its stored section. Every mapped claim must resolve to a validated evidence ID and occur verbatim in both the delivered text and at least one cited quote. Absolute asset sentences that contain neither exact evidence nor an exact claim are rejected unless explicitly framed as a test or hypothesis.
 
 ## Authentication
 

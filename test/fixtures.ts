@@ -28,7 +28,7 @@ export const GENERATED = {
     format: "LinkedIn post",
     title: "A calmer launch workflow",
     body:
-      "Independent product teams can plan work, review customer evidence, and coordinate launches in one calm workspace. Explore the workflow: {{TRACKING_URL}}",
+      "Plan work, review customer evidence, and coordinate launches in one calm workspace. Explore the workflow: {{TRACKING_URL}}",
     cta: "Explore the workflow",
   },
   evidence: [
@@ -41,7 +41,7 @@ export const GENERATED = {
   ],
   claimMap: [
     {
-      claim: "Teams can coordinate launches in one workspace.",
+      claim: "Plan work, review customer evidence, and coordinate launches in one calm workspace.",
       evidenceIds: ["e1"],
     },
   ],

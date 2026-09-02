@@ -48,4 +48,28 @@ describe("claim-to-evidence and content quality", () => {
     const generated = generatedMissionSchema.parse(GENERATED);
     expect(() => validateGeneratedMission(generated, sections, "leads", "x")).toThrow(/requested platform/);
   });
+
+  it("rejects a mapped claim that is not extractive from its evidence", () => {
+    const generated = generatedMissionSchema.parse({
+      ...GENERATED,
+      claimMap: [{ claim: "This workspace guarantees faster launches.", evidenceIds: ["e1"] }],
+    });
+    expect(() => validateGeneratedMission(generated, sections, "leads", "linkedin")).toThrow(/deliverable|cited evidence/);
+  });
+
+  it("rejects an unsupported absolute statement in the asset", () => {
+    const generated = generatedMissionSchema.parse({
+      ...GENERATED,
+      asset: { ...GENERATED.asset, body: `${GENERATED.asset.body} This platform improves every launch workflow.` },
+    });
+    expect(() => validateGeneratedMission(generated, sections, "leads", "linkedin")).toThrow(/neither exact evidence/);
+  });
+
+  it("rejects a distribution-platform claim absent from cited evidence", () => {
+    const generated = generatedMissionSchema.parse({
+      ...GENERATED,
+      asset: { ...GENERATED.asset, body: `${GENERATED.asset.body} Test whether this LinkedIn post attracts relevant teams.` },
+    });
+    expect(() => validateGeneratedMission(generated, sections, "leads", "linkedin")).toThrow(/names linkedin/);
+  });
 });
