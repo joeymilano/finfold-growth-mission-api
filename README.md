@@ -20,7 +20,7 @@ flowchart LR
   F --> G[Verdict + next action]
 ```
 
-The model cannot cite arbitrary summaries: every delivered evidence quote must be an exact substring of a stable semantic source section, and every mapped claim must be the exact textual intersection of the deliverable and its cited quote. Absolute asset statements must be extractive evidence; other reasoning must be explicitly framed as a test or hypothesis. Invalid structure, unsupported numbers, missing CTA, unverifiable claims, platform overflow, or guaranteed-result language triggers one repair attempt and then a clear error—never a fabricated fallback.
+The model selects evidence by stable semantic section ID, and the service canonicalizes each quote from the fetched source before validation. Every mapped claim must be the exact textual intersection of the deliverable and its cited quote. Absolute asset statements must be extractive evidence; other reasoning must be explicitly framed as a test or hypothesis. Invalid structure, unsupported numbers, missing CTA, unverifiable claims, platform overflow, or guaranteed-result language triggers one repair attempt and then a clear error—never a fabricated fallback.
 
 ## Live interfaces
 

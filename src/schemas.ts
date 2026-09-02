@@ -59,7 +59,7 @@ export const generatedMissionSchema = z
           .object({
             id: z.string().regex(/^e[1-9][0-9]*$/),
             sectionId: z.string().regex(/^s[1-9][0-9]*$/),
-            quote: z.string().min(3).max(1_000),
+            quote: z.string().min(3).max(1_200),
             confidence: z.number().min(0).max(1),
           })
           .strict(),

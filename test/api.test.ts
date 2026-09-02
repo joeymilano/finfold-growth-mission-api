@@ -62,6 +62,34 @@ describe("REST growth mission loop", () => {
     expect(body.sideEffects).toEqual({ persisted: true, published: false, externalAccountsModified: false });
   });
 
+  it("canonicalizes a model-copied quote from the selected source section", async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockImplementationOnce(async () =>
+      new Response((await import("./fixtures")).SOURCE_HTML, {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      }),
+    );
+    fetchMock.mockImplementationOnce(async () =>
+      Response.json({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                ...GENERATED,
+                evidence: [{ ...GENERATED.evidence[0], quote: "model copied this incorrectly" }],
+              }),
+            },
+          },
+        ],
+      }),
+    );
+
+    const { response, body } = await createMission("canonical-quote-0001");
+    expect(response.status).toBe(201);
+    expect(body.evidence[0].quote).toBe(GENERATED.evidence[0]?.quote);
+  });
+
   it("replays the same idempotency key and rejects a changed payload", async () => {
     const first = await createMission("same-key-0001");
     const replay = await createMission("same-key-0001");
