@@ -77,7 +77,9 @@ describe("REST growth mission loop", () => {
             message: {
               content: JSON.stringify({
                 ...GENERATED,
+                asset: { ...GENERATED.asset, body: "A model paraphrase with no source support. {{TRACKING_URL}}" },
                 evidence: [{ ...GENERATED.evidence[0], quote: "model copied this incorrectly" }],
+                claimMap: [{ claim: "A model paraphrase with no source support.", evidenceIds: ["e1"] }],
               }),
             },
           },
@@ -88,6 +90,9 @@ describe("REST growth mission loop", () => {
     const { response, body } = await createMission("canonical-quote-0001");
     expect(response.status).toBe(201);
     expect(body.evidence[0].quote).toBe(GENERATED.evidence[0]?.quote);
+    expect(body.asset.body).toContain(GENERATED.evidence[0]?.quote);
+    expect(body.asset.body).not.toContain("model paraphrase");
+    expect(body.claimMap[0].claim).toBe(GENERATED.evidence[0]?.quote);
   });
 
   it("replays the same idempotency key and rejects a changed payload", async () => {

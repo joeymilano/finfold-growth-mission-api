@@ -20,7 +20,7 @@ flowchart LR
   F --> G[Verdict + next action]
 ```
 
-The model selects evidence by stable semantic section ID, and the service canonicalizes each quote from the fetched source before validation. Every mapped claim must be the exact textual intersection of the deliverable and its cited quote. Absolute asset statements must be extractive evidence; other reasoning must be explicitly framed as a test or hypothesis. Invalid structure, unsupported numbers, missing CTA, unverifiable claims, platform overflow, or guaranteed-result language triggers one repair attempt and then a clear error—never a fabricated fallback.
+The model selects the mission, audience, hypothesis, and evidence by stable semantic section ID. A deterministic evidence compiler canonicalizes each quote and assembles the factual content sentence and claim map from that source text before validation. Every mapped claim is therefore the exact textual intersection of the deliverable and its cited quote. Invalid structure, unknown evidence IDs, unsupported numbers, missing CTA, platform overflow, or guaranteed-result language triggers one repair attempt and then a clear error—never a fabricated fallback.
 
 ## Live interfaces
 

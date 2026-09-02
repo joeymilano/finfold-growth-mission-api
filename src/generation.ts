@@ -154,9 +154,9 @@ function parseGenerated(raw: string): GeneratedMission {
   return result.data;
 }
 
-export function groundEvidenceQuotes(generated: GeneratedMission, source: SourceEvidence): GeneratedMission {
+export function groundEvidenceQuotes(generated: GeneratedMission, source: SourceEvidence, locale = "en"): GeneratedMission {
   const sectionsById = new Map(source.sections.map((section) => [section.id, section.text]));
-  return {
+  const grounded = {
     ...generated,
     evidence: generated.evidence.map((evidence) => {
       const quote = sectionsById.get(evidence.sectionId);
@@ -170,6 +170,82 @@ export function groundEvidenceQuotes(generated: GeneratedMission, source: Source
       return { ...evidence, quote };
     }),
   };
+  return compileEvidenceBoundAsset(grounded, locale);
+}
+
+function claimFromQuote(quote: string, maximum: number): string {
+  if (quote.length <= maximum) return quote;
+  const sentences = quote.match(/[^.!?。！？]+[.!?。！？]?/gu) ?? [];
+  const sentence = sentences.map((value) => value.trim()).find((value) => value.length >= 20 && value.length <= maximum);
+  if (sentence) return sentence;
+  const candidate = quote.slice(0, maximum);
+  const lastSpace = candidate.lastIndexOf(" ");
+  return (lastSpace >= Math.floor(maximum * 0.6) ? candidate.slice(0, lastSpace) : candidate).trim();
+}
+
+function compileEvidenceBoundAsset(generated: GeneratedMission, locale: string): GeneratedMission {
+  const selected = generated.evidence[0];
+  if (!selected) {
+    throw new AppError("INSUFFICIENT_EVIDENCE", "Generation selected no usable evidence.", 422);
+  }
+  const copy = {
+    linkedin: {
+      intro: "A product angle worth testing:",
+      outro: "Could this be useful in your workflow?",
+      title: "An evidence-led product angle",
+      cta: "Explore the source",
+      maximumClaim: 1_800,
+    },
+    x: {
+      intro: "Test this product angle:",
+      outro: "Explore:",
+      title: "An evidence-led product angle",
+      cta: "Explore the source",
+      maximumClaim: 150,
+    },
+    reddit: {
+      intro: "I'd like to test one evidence-led product angle:",
+      outro: "Could this be useful in your workflow?",
+      title: "An evidence-led product angle to test",
+      cta: "Explore the source",
+      maximumClaim: 2_500,
+    },
+    xiaohongshu: {
+      intro: "A product angle worth testing:",
+      outro: "Could this be useful in your workflow?",
+      title: "An evidence-led product angle",
+      cta: "Explore the source",
+      maximumClaim: 650,
+    },
+    wechat: {
+      intro: "A product angle worth testing:",
+      outro: "Could this be useful in your workflow?",
+      title: "An evidence-led product angle",
+      cta: "Explore the source",
+      maximumClaim: 2_500,
+    },
+  } as const;
+  const selectedCopy = copy[generated.mission.platform];
+  const platformCopy = locale.toLowerCase().startsWith("zh")
+    ? {
+        ...selectedCopy,
+        intro: "测试一个基于产品证据的角度：",
+        outro: "看看它是否适合你的下一步：",
+        title: "一个值得测试的产品角度",
+        cta: "查看原始页面",
+      }
+    : selectedCopy;
+  const claim = claimFromQuote(selected.quote, platformCopy.maximumClaim);
+  return {
+    ...generated,
+    asset: {
+      ...generated.asset,
+      title: platformCopy.title,
+      body: `${platformCopy.intro}\n\n${claim}\n\n${platformCopy.outro} {{TRACKING_URL}}`,
+      cta: platformCopy.cta,
+    },
+    claimMap: [{ claim, evidenceIds: [selected.id] }],
+  };
 }
 
 export async function generateMission(env: Env, input: CreateMissionInput, source: SourceEvidence): Promise<GenerationResult> {
@@ -181,7 +257,7 @@ export async function generateMission(env: Env, input: CreateMissionInput, sourc
   let firstRaw = "";
   try {
     firstRaw = await callModel(env, messages);
-    const generated = groundEvidenceQuotes(parseGenerated(firstRaw), source);
+    const generated = groundEvidenceQuotes(parseGenerated(firstRaw), source, input.locale);
     const quality = validateGeneratedMission(generated, source.sections, input.objective, input.platform);
     return { generated, quality, providerAttempts: 1 };
   } catch (error) {
@@ -201,7 +277,7 @@ export async function generateMission(env: Env, input: CreateMissionInput, sourc
   ];
   try {
     const repairedRaw = await callModel(env, repairMessages);
-    const generated = groundEvidenceQuotes(parseGenerated(repairedRaw), source);
+    const generated = groundEvidenceQuotes(parseGenerated(repairedRaw), source, input.locale);
     const quality = validateGeneratedMission(generated, source.sections, input.objective, input.platform);
     return { generated, quality, providerAttempts: 2 };
   } catch (error) {
