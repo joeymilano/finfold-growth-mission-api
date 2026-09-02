@@ -54,7 +54,8 @@ describe("REST growth mission loop", () => {
     const { response, body } = await createMission();
     expect(response.status).toBe(201);
     expect(body.mission.id).toMatch(/^gm_[a-z0-9]{24}$/);
-    expect(body.mission.title).toBe(GENERATED.mission.title);
+    expect(body.mission.title).toBe("Test one evidence-led message for qualified leads");
+    expect(body.mission.hypothesis).toMatch(/^Test whether /);
     expect(body.asset.body).toContain(`https://api.finfold.app/r/${body.tracking.code}`);
     expect(body.asset.body).not.toContain("{{TRACKING_URL}}");
     expect(body.evidence[0].quote).toBe(GENERATED.evidence[0]?.quote);
@@ -78,7 +79,10 @@ describe("REST growth mission loop", () => {
               content: JSON.stringify({
                 ...GENERATED,
                 asset: { ...GENERATED.asset, body: "A model paraphrase with no source support. {{TRACKING_URL}}" },
-                evidence: [{ ...GENERATED.evidence[0], quote: "model copied this incorrectly" }],
+                evidence: [
+                  { id: "e1", sectionId: "s1", quote: "model copied this incorrectly", confidence: 0.9 },
+                  { id: "e2", sectionId: "s4", quote: "model also copied this incorrectly", confidence: 0.9 },
+                ],
                 claimMap: [{ claim: "A model paraphrase with no source support.", evidenceIds: ["e1"] }],
               }),
             },
@@ -89,10 +93,11 @@ describe("REST growth mission loop", () => {
 
     const { response, body } = await createMission("canonical-quote-0001");
     expect(response.status).toBe(201);
-    expect(body.evidence[0].quote).toBe(GENERATED.evidence[0]?.quote);
+    expect(body.evidence[0].quote).toBe("Acme Workflow");
     expect(body.asset.body).toContain(GENERATED.evidence[0]?.quote);
     expect(body.asset.body).not.toContain("model paraphrase");
     expect(body.claimMap[0].claim).toBe(GENERATED.evidence[0]?.quote);
+    expect(body.claimMap[0].evidenceIds).toEqual(["e2"]);
   });
 
   it("replays the same idempotency key and rejects a changed payload", async () => {

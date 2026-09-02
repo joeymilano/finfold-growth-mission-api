@@ -170,7 +170,7 @@ export function groundEvidenceQuotes(generated: GeneratedMission, source: Source
       return { ...evidence, quote };
     }),
   };
-  return compileEvidenceBoundAsset(grounded, locale);
+  return compileEvidenceBoundAsset(grounded, source, locale);
 }
 
 function claimFromQuote(quote: string, maximum: number): string {
@@ -183,8 +183,25 @@ function claimFromQuote(quote: string, maximum: number): string {
   return (lastSpace >= Math.floor(maximum * 0.6) ? candidate.slice(0, lastSpace) : candidate).trim();
 }
 
-function compileEvidenceBoundAsset(generated: GeneratedMission, locale: string): GeneratedMission {
-  const selected = generated.evidence[0];
+function evidenceScore(evidence: GeneratedMission["evidence"][number], source: SourceEvidence): number {
+  const section = source.sections.find((candidate) => candidate.id === evidence.sectionId);
+  const kindScore = {
+    paragraph: 10,
+    list: 8,
+    description: 6,
+    "structured-data": 4,
+    heading: 1,
+    link: 0,
+    title: -5,
+  }[section?.kind ?? "title"];
+  const specificity = (evidence.quote.match(/\b(?:not|problem|without|manual|workflow|customer|team|source|channel|evidence)\b/gi) ?? [])
+    .length;
+  const lengthScore = evidence.quote.length >= 50 && evidence.quote.length <= 300 ? 5 : evidence.quote.length >= 30 ? 2 : -3;
+  return kindScore + specificity + lengthScore + Math.min(evidence.quote.length, 300) / 1_000;
+}
+
+function compileEvidenceBoundAsset(generated: GeneratedMission, source: SourceEvidence, locale: string): GeneratedMission {
+  const selected = [...generated.evidence].sort((left, right) => evidenceScore(right, source) - evidenceScore(left, source))[0];
   if (!selected) {
     throw new AppError("INSUFFICIENT_EVIDENCE", "Generation selected no usable evidence.", 422);
   }
@@ -236,10 +253,36 @@ function compileEvidenceBoundAsset(generated: GeneratedMission, locale: string):
       }
     : selectedCopy;
   const claim = claimFromQuote(selected.quote, platformCopy.maximumClaim);
+  const isChinese = locale.toLowerCase().startsWith("zh");
+  const objectiveLabel = {
+    leads: isChinese ? "潜在客户" : "qualified leads",
+    signups: isChinese ? "注册" : "signups",
+    purchases: isChinese ? "购买" : "purchases",
+    revenue: isChinese ? "收入" : "revenue",
+  }[generated.mission.primaryMetric];
+  const hypothesis = (
+    isChinese
+      ? `测试这个假设：${generated.mission.hypothesis}`
+      : /^(?:test|hypothesis|may|might|could)\b/i.test(generated.mission.hypothesis)
+        ? generated.mission.hypothesis
+        : `Test whether ${generated.mission.hypothesis.charAt(0).toLowerCase()}${generated.mission.hypothesis.slice(1)}`
+  ).slice(0, 500);
   return {
     ...generated,
+    mission: {
+      ...generated.mission,
+      title: isChinese ? `测试一条基于证据的信息以获得${objectiveLabel}` : `Test one evidence-led message for ${objectiveLabel}`,
+      hypothesis,
+    },
     asset: {
       ...generated.asset,
+      format: {
+        linkedin: "LinkedIn post",
+        x: "X post",
+        reddit: "Reddit post",
+        xiaohongshu: "Xiaohongshu post",
+        wechat: "WeChat article",
+      }[generated.mission.platform],
       title: platformCopy.title,
       body: `${platformCopy.intro}\n\n${claim}\n\n${platformCopy.outro} {{TRACKING_URL}}`,
       cta: platformCopy.cta,
