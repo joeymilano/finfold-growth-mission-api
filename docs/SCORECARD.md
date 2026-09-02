@@ -10,7 +10,7 @@ Every evidence quote is an exact source substring. One repair attempt is allowed
 
 ## Engineering and maintainability — 20
 
-The repository includes strict TypeScript, Zod schemas, a lockfile, D1 migrations, atomic limits, scoped hashed keys, request-hash idempotency, structured redacted logs, retention cleanup, OpenAPI, CI, lint, Worker-runtime integration tests, dry-run bundling, secret scan, deployment verification, and a production benchmark script.
+The repository includes strict TypeScript, Zod schemas, a lockfile, D1 migrations, atomic limits, scoped hashed keys, request-hash idempotency, structured redacted logs, retention cleanup, OpenAPI, CI, lint, Worker-runtime integration tests, dry-run bundling, secret scan, deployment verification, and a committed credential-free production benchmark. The 2026-09-02 run passed the declared synchronous gate at 19/20 successes and 14,394 ms p95; its one 35-second client timeout remains disclosed.
 
 ## MCP productization — 15
 

@@ -37,3 +37,5 @@ REVIEW_KEY="..." SOURCE_URL="https://www.finfold.app/" npm run benchmark
 ```
 
 The script writes a credential-free JSON report under ignored `benchmark-results/`. It exits non-zero unless at least 19 of 20 calls succeed and synchronous p95 is at most 30 seconds. If this gate fails, the release must change mission creation to `202 Accepted` plus polling before submission; the synchronous claim must not be published.
+
+The committed production run is [`benchmark-2026-09-02.json`](benchmark-2026-09-02.json): 19/20 successful calls (95%), 14,394 ms p95, gate passed. Run 16 hit the client's 35-second timeout; it is retained in the report rather than excluded.
