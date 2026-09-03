@@ -148,7 +148,12 @@ export function validateGeneratedMission(
   const unsupportedStatements = body
     .replace("{{TRACKING_URL}}", ".\n")
     .split(/(?<=[.!?。！？])\s+|\n+/u)
-    .map((statement) => statement.trim().replace(/^["“”']+|["“”']+$/g, ""))
+    .map((statement) =>
+      statement
+        .trim()
+        .replace(/^[•*-]\s*/, "")
+        .replace(/^["“”']+|["“”']+$/g, ""),
+    )
     .filter((statement) => statement.length >= 20)
     .filter((statement) => !/^https?:\/\//i.test(statement))
     .filter(

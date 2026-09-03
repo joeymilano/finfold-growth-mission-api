@@ -42,6 +42,27 @@ describe("claim-to-evidence and content quality", () => {
     ).toMatchObject({ passed: true, evidenceExactMatch: true });
   });
 
+  it("accepts bullet-formatted canonical multi-sentence evidence", () => {
+    const quote = "Plan work in one calm workspace. Review customer evidence before launch.";
+    const generated = generatedMissionSchema.parse({
+      ...GENERATED,
+      asset: {
+        ...GENERATED.asset,
+        body: `Test whether this evidence resonates.\n\nPage evidence:\n• ${quote}\n\nTest the response: {{TRACKING_URL}}`,
+      },
+      evidence: [{ id: "e1", sectionId: "s1", quote, confidence: 0.99 }],
+      claimMap: [{ claim: quote, evidenceIds: ["e1"] }],
+    });
+    expect(
+      validateGeneratedMission(
+        generated,
+        [{ id: "s1", kind: "paragraph", text: quote }],
+        "leads",
+        "linkedin",
+      ),
+    ).toMatchObject({ passed: true });
+  });
+
   it("rejects a quote that is not an exact source substring", () => {
     const generated = generatedMissionSchema.parse({
       ...GENERATED,
