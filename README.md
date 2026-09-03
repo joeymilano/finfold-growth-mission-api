@@ -35,7 +35,7 @@ The model selects the mission, audience, hypothesis, and evidence by stable sema
 - `POST /mcp` — stateless Streamable HTTP MCP
 - `GET /openapi.json` — OpenAPI 3.1 contract
 
-Mutation endpoints require both `Authorization: Bearer <review-key>` and `Idempotency-Key`. The review key is SHA-256 hashed at rest, scope-limited, capped at 50 authenticated calls per UTC day, and expires on 2026-10-05.
+Mutation endpoints require both `Authorization: Bearer <review-key>` and `Idempotency-Key`. The review key is SHA-256 hashed at rest, scope-limited, capped at 100 authenticated calls per UTC day, and expires on 2026-10-05.
 
 ## Quick start
 
