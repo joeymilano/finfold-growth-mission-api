@@ -136,7 +136,7 @@ export function validateGeneratedMission(
   }
 
   const supportedText = generated.evidence.map((evidence) => evidence.quote).join(" ");
-  const numberTokens = [...body.matchAll(/(?<![\p{L}\p{N}])\d+(?:[.,]\d+)?%?/gu)].map((match) => match[0]);
+  const numberTokens = [...deliverableText.matchAll(/(?<![\p{L}\p{N}])\d+(?:[.,]\d+)?%?/gu)].map((match) => match[0]);
   const unsupportedNumbers = [...new Set(numberTokens.filter((token) => !supportedText.includes(token)))];
   if (unsupportedNumbers.length) {
     throw new AppError("QUALITY_VALIDATION_FAILED", "Content contains numbers not present in cited evidence.", 422, {
