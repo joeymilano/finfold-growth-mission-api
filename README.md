@@ -105,7 +105,7 @@ Platforms: `auto`, `linkedin`, `x`, `reddit`, `xiaohongshu`, and `wechat`.
 npm run check
 ```
 
-This runs lint, strict TypeScript, Worker-runtime unit/integration tests, Wrangler dry-run bundling, and a high-confidence secret scan. See [verification/README.md](verification/README.md) for the complete reproducibility and production benchmark procedure.
+This runs lint, strict TypeScript, Worker-runtime unit/integration tests, Wrangler dry-run bundling, and a high-confidence secret scan. See [verification/README.md](verification/README.md) for the complete reproducibility procedure, the five-platform production benchmark, a redacted live mission, and authenticated MCP discovery evidence.
 
 ## Safety boundary
 

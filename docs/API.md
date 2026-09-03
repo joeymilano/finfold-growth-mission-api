@@ -4,6 +4,8 @@
 
 All mission and usage endpoints require `Authorization: Bearer <key>`. Required scopes are documented per route. `POST` routes also require an `Idempotency-Key` of 8–128 safe characters.
 
+All routes answer browser preflight requests and expose the request/idempotency headers needed by reviewer consoles. Public documentation endpoints also support `HEAD`. Authentication remains explicit Bearer-token based; the service uses no ambient browser cookie.
+
 Reusing a key with the same normalized request returns the original status and body with `Idempotent-Replayed: true`. Reusing it with a different request returns `409 IDEMPOTENCY_CONFLICT`. A concurrent duplicate returns `409 REQUEST_IN_PROGRESS` and is safe to retry later with the same key.
 
 ## Typed source errors
